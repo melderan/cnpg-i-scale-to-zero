@@ -18,8 +18,8 @@ PR images are tagged with the format: `pr-{number}-{sha}`
 
 For example:
 
-- `ghcr.io/xataio/cnpg-i-scale-to-zero:pr-123-abc1234`
-- `ghcr.io/xataio/cnpg-i-scale-to-zero-sidecar:pr-123-abc1234`
+- `ghcr.io/melderan/cnpg-i-scale-to-zero:pr-123-abc1234`
+- `ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:pr-123-abc1234`
 
 ### Security Benefits
 

@@ -29,15 +29,15 @@ jobs:
     needs: [docker-build]
     steps:
       - name: Comment on PR with image details
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const tag = `pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}`.substring(0, 50); // Truncate to reasonable length
             const body = `🚀 **PR Images Built Successfully!**
 
             **Image Tags:**
-            - Plugin: \`ghcr.io/xataio/cnpg-i-scale-to-zero:${tag}\`
-            - Sidecar: \`ghcr.io/xataio/cnpg-i-scale-to-zero-sidecar:${tag}\`
+            - Plugin: \`ghcr.io/melderan/cnpg-i-scale-to-zero:${tag}\`
+            - Sidecar: \`ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:${tag}\`
 
             **Manifest:** Download the \`kubernetes-manifest-pr-${{ github.event.number }}\` artifact from this workflow run.
 

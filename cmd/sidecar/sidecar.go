@@ -7,7 +7,8 @@ import (
 	"github.com/cloudnative-pg/machinery/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/xataio/cnpg-i-scale-to-zero/internal/sidecar"
+
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/sidecar"
 )
 
 func main() {

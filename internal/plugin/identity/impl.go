@@ -5,7 +5,7 @@ import (
 
 	"github.com/cloudnative-pg/cnpg-i/pkg/identity"
 
-	"github.com/xataio/cnpg-i-scale-to-zero/pkg/metadata"
+	"github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata"
 )
 
 // Implementation is the implementation of the identity service
@@ -32,6 +32,13 @@ func (Implementation) GetPluginCapabilities(
 				Type: &identity.PluginCapability_Service_{
 					Service: &identity.PluginCapability_Service{
 						Type: identity.PluginCapability_Service_TYPE_LIFECYCLE_SERVICE,
+					},
+				},
+			},
+			{
+				Type: &identity.PluginCapability_Service_{
+					Service: &identity.PluginCapability_Service{
+						Type: identity.PluginCapability_Service_TYPE_INSTANCE_SIDECAR_INJECTION,
 					},
 				},
 			},

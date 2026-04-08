@@ -117,7 +117,7 @@ spec:
         envFrom:
         - secretRef:
             name: scale-to-zero-config-tcb898m758
-        image: ghcr.io/xataio/cnpg-i-scale-to-zero:main
+        image: ghcr.io/melderan/cnpg-i-scale-to-zero:main
         livenessProbe:
           failureThreshold: 3
           initialDelaySeconds: 10

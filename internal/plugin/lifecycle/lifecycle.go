@@ -12,7 +12,7 @@ import (
 	"github.com/cloudnative-pg/machinery/pkg/log"
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/xataio/cnpg-i-scale-to-zero/internal/config"
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/config"
 )
 
 // Implementation is the implementation of the lifecycle handler

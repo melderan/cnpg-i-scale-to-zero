@@ -4,7 +4,8 @@ import (
 	"context"
 
 	cnpgv1 "github.com/cloudnative-pg/cloudnative-pg/api/v1"
-	"github.com/xataio/cnpg-i-scale-to-zero/internal/postgres"
+
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/postgres"
 )
 
 type mockClusterClient struct {

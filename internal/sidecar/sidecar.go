@@ -17,7 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/scheme"
 
-	"github.com/xataio/cnpg-i-scale-to-zero/pkg/metadata"
+	"github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata"
 )
 
 // Start starts the sidecar informers and CNPG-i server

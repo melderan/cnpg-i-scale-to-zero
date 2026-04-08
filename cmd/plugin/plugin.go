@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
-	"github.com/xataio/cnpg-i-scale-to-zero/internal/config"
-	"github.com/xataio/cnpg-i-scale-to-zero/internal/plugin/identity"
-	lifecycleImpl "github.com/xataio/cnpg-i-scale-to-zero/internal/plugin/lifecycle"
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/config"
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/plugin/identity"
+	lifecycleImpl "github.com/melderan/cnpg-i-scale-to-zero/internal/plugin/lifecycle"
 )
 
 func main() {

@@ -10,8 +10,9 @@ import (
 
 	cnpgv1 "github.com/cloudnative-pg/cloudnative-pg/api/v1"
 	"github.com/stretchr/testify/require"
-	"github.com/xataio/cnpg-i-scale-to-zero/internal/postgres"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/postgres"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/utils/ptr"

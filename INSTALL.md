@@ -14,7 +14,7 @@ This guide explains how to install and use the CNPG-I Scale-to-Zero plugin.
 
 ```bash
 # Install the plugin
-kubectl apply -f https://raw.githubusercontent.com/xataio/cnpg-i-scale-to-zero/main/manifest.yaml
+kubectl apply -f https://raw.githubusercontent.com/melderan/cnpg-i-scale-to-zero/main/manifest.yaml
 
 # Wait for the plugin to be ready
 kubectl wait --for=condition=available --timeout=300s deployment/scale-to-zero -n cnpg-system
@@ -24,7 +24,7 @@ kubectl wait --for=condition=available --timeout=300s deployment/scale-to-zero -
 
 ```bash
 # Clone the repository
-git clone https://github.com/xataio/cnpg-i-scale-to-zero.git
+git clone https://github.com/melderan/cnpg-i-scale-to-zero.git
 cd cnpg-i-scale-to-zero
 
 make deploy
@@ -56,7 +56,7 @@ Each cluster that uses scale-to-zero functionality requires specific RBAC permis
 
 ```bash
 # Download the RBAC template
-curl -O https://raw.githubusercontent.com/xataio/cnpg-i-scale-to-zero/main/doc/examples/rbac-template.yaml
+curl -O https://raw.githubusercontent.com/melderan/cnpg-i-scale-to-zero/main/doc/examples/rbac-template.yaml
 
 # Customize for your cluster
 sed -i 's/CLUSTER_NAME/my-cluster/g; s/NAMESPACE/default/g' rbac-template.yaml

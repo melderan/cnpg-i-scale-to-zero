@@ -187,7 +187,7 @@ The plugin behavior can be configured through cluster annotations:
 
 The injected sidecar container is configurable and uses environment-based configuration:
 
-- **Default image**: `ghcr.io/xataio/cnpg-i-scale-to-zero-sidecar:main`
+- **Default image**: `ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:main`
 - **Configurable via**: `SIDECAR_IMAGE` environment variable or `--sidecar-image` flag
 - Environment variables for cluster identification
 - Direct access to the PostgreSQL database

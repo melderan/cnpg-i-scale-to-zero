@@ -14,9 +14,9 @@ var Data = identity.GetPluginMetadataResponse{
 	Name:          PluginName,
 	Version:       Version,
 	DisplayName:   "Plugin to scale down a CNPG PostgreSQL cluster to zero",
-	ProjectUrl:    "https://github.com/xataio/cnpg-i-scale-to-zero",
-	RepositoryUrl: "https://github.com/xataio/cnpg-i-scale-to-zero",
+	ProjectUrl:    "https://github.com/melderan/cnpg-i-scale-to-zero",
+	RepositoryUrl: "https://github.com/melderan/cnpg-i-scale-to-zero",
 	License:       "Apache-2.0",
-	LicenseUrl:    "https://github.com/xataio/cnpg-i-scale-to-zero/LICENSE",
+	LicenseUrl:    "https://github.com/melderan/cnpg-i-scale-to-zero/LICENSE",
 	Maturity:      "alpha",
 }

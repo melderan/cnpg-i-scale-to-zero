@@ -33,8 +33,8 @@ kubectl apply -f manifest.yaml
 
 The plugin consists of two container images:
 
-- **Plugin**: `ghcr.io/xataio/cnpg-i-scale-to-zero`
-- **Sidecar**: `ghcr.io/xataio/cnpg-i-scale-to-zero-sidecar`
+- **Plugin**: `ghcr.io/melderan/cnpg-i-scale-to-zero`
+- **Sidecar**: `ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar`
 
 ### Image Tags
 
@@ -96,7 +96,7 @@ Create the required RBAC using the template:
 
 ```bash
 # Copy the RBAC template
-curl -O https://raw.githubusercontent.com/xataio/cnpg-i-scale-to-zero/main/doc/examples/rbac-template.yaml
+curl -O https://raw.githubusercontent.com/melderan/cnpg-i-scale-to-zero/main/doc/examples/rbac-template.yaml
 
 # Edit the template to replace CLUSTER_NAME and NAMESPACE
 sed -i 's/CLUSTER_NAME/my-cluster/g; s/NAMESPACE/default/g' rbac-template.yaml

@@ -21,8 +21,8 @@ test: ## Run tests with coverage
 .PHONY: build
 build: ## Build plugin and sidecar binaries
 	@echo "Building binaries with version: $(VERSION)"
-	@CGO_ENABLED=0 go build -ldflags "-X github.com/xataio/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o /bin/cnpg-i-scale-to-zero-plugin cmd/plugin/plugin.go
-	@CGO_ENABLED=0 go build -ldflags "-X github.com/xataio/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o /bin/cnpg-scale-to-zero-sidecar cmd/sidecar/sidecar.go
+	@CGO_ENABLED=0 go build -ldflags "-X github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o /bin/cnpg-i-scale-to-zero-plugin cmd/plugin/plugin.go
+	@CGO_ENABLED=0 go build -ldflags "-X github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o /bin/cnpg-scale-to-zero-sidecar cmd/sidecar/sidecar.go
 
 .PHONY: docker-build-plugin-dev
 docker-build-plugin-dev: ## Build Docker image for the plugin
@@ -52,7 +52,7 @@ manifest: ## Generate Kubernetes manifest
 manifest-dev: manifest ## Generate development Kubernetes manifest with local images
 	@echo "Generating development Kubernetes manifest with local images..."
 	@cp manifest.yaml manifest-dev.yaml
-	@sed -i.tmp 's|image: ghcr.io/xataio/cnpg-i-scale-to-zero:main|image: cnpg-i-scale-to-zero-plugin:dev|g' manifest-dev.yaml
+	@sed -i.tmp 's|image: ghcr.io/melderan/cnpg-i-scale-to-zero:main|image: cnpg-i-scale-to-zero-plugin:dev|g' manifest-dev.yaml
 	@sed -i.tmp 's|Z2hjci5pby94YXRhaW8vY25wZy1pLXNjYWxlLXRvLXplcm8tc2lkZWNhcjptYWlu|Y25wZy1zY2FsZS10by16ZXJvLXNpZGVjYXI6ZGV2|g' manifest-dev.yaml
 	@sed -i.tmp 's|value: info|value: debug|g' manifest-dev.yaml
 	@rm -f manifest-dev.yaml.tmp

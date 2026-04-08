@@ -24,7 +24,7 @@ type ResourceConfig struct {
 }
 
 const (
-	defaultSidecarImage = "ghcr.io/xataio/cnpg-i-scale-to-zero-sidecar:main"
+	defaultSidecarImage = "ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:main"
 	defaultLogLevel     = "info"
 	defaultCPURequest   = "50m"
 	defaultCPULimit     = "200m"
