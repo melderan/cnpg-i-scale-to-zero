@@ -11,11 +11,11 @@ import (
 	cnpgv1 "github.com/cloudnative-pg/cloudnative-pg/api/v1"
 	"github.com/cloudnative-pg/machinery/pkg/log"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-
-	"github.com/melderan/cnpg-i-scale-to-zero/internal/postgres"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/melderan/cnpg-i-scale-to-zero/internal/postgres"
 )
 
 // scaleToZero manages the scale to zero functionality for a CloudNativePG
@@ -206,7 +206,7 @@ func (s *scaleToZero) isClusterActive(ctx context.Context, inactivityMinutes int
 
 // openConnections queries the PostgreSQL database to count the number of open connections.
 func (s *scaleToZero) openConnections(ctx context.Context) (int, error) {
-	const query = `SELECT COUNT(*) FROM pg_stat_activity WHERE state IN ('active', 'idle', 'idle in transaction') AND pg_backend_pid() != pg_stat_activity.pid AND usename != 'streaming_replica';`
+	const query = `SELECT COUNT(*) FROM pg_stat_activity WHERE state IN ('active', 'idle', 'idle in transaction') AND pid != pg_backend_pid() AND usename != 'streaming_replica' AND application_name != 'cnpg-i-scale-to-zero';`
 	var count int
 	if err := s.pgQuerier.QueryRow(ctx, query).Scan(&count); err != nil {
 		return 0, fmt.Errorf("failed to query open connections: %w", err)

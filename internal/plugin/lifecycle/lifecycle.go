@@ -134,9 +134,7 @@ func (impl Implementation) reconcileMetadata(
 		"primary", cluster.Status.CurrentPrimary,
 		"resources", sidecarContainer.Resources)
 
-	// migrate to InjectPluginInitContainerSidecarSpec (means dropping support for k8s < 1.29)
-	//nolint:staticcheck
-	err = object.InjectPluginSidecar(mutatedPod, sidecarContainer, false)
+	err = object.InjectPluginSidecarInitContainer(mutatedPod, sidecarContainer, false)
 	if err != nil {
 		return nil, err
 	}

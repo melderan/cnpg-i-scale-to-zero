@@ -139,6 +139,6 @@ func (r *cnpgClusterClient) updateClusterScheduledBackup(ctx context.Context, sc
 }
 
 func (p *postgreSQLCredentials) connString() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require application_name=cnpg-i-scale-to-zero",
 		p.host, p.port, p.username, p.password, p.database)
 }

@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -12,7 +12,7 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
   - repo: https://github.com/golangci/golangci-lint
-    rev: v2.0.2
+    rev: v2.1.0
     hooks:
       - id: golangci-lint-full
         args: ["--timeout=10m", "--config=.golangci.yml"]
@@ -22,3 +22,4 @@ repos:
         language: system
         name: generate manifest
         entry: make manifest
+        files: ^kubernetes/
