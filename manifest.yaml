@@ -50,10 +50,10 @@ subjects:
 ---
 apiVersion: v1
 data:
-  SIDECAR_IMAGE: Z2hjci5pby94YXRhaW8vY25wZy1pLXNjYWxlLXRvLXplcm8tc2lkZWNhcjptYWlu
+  SIDECAR_IMAGE: Z2hjci5pby9tZWxkZXJhbi9jbnBnLWktc2NhbGUtdG8temVyby1zaWRlY2FyOm1haW4=
 kind: Secret
 metadata:
-  name: scale-to-zero-config-tcb898m758
+  name: scale-to-zero-config-6bhdck79kh
   namespace: cnpg-system
 type: Opaque
 ---
@@ -116,7 +116,7 @@ spec:
           value: 64Mi
         envFrom:
         - secretRef:
-            name: scale-to-zero-config-tcb898m758
+            name: scale-to-zero-config-6bhdck79kh
         image: ghcr.io/melderan/cnpg-i-scale-to-zero:main
         livenessProbe:
           failureThreshold: 3

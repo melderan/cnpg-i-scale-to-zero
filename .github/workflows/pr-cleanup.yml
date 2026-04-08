@@ -46,10 +46,10 @@ jobs:
               console.log(`Checking for images in package: ${packageName}`);
 
               try {
-                const { data: versions } = await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+                const { data: versions } = await github.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
                   package_type: 'container',
                   package_name: packageName,
-                  org: context.repo.owner
+                  username: context.repo.owner
                 });
 
                 for (const version of versions) {
@@ -57,10 +57,10 @@ jobs:
                   const hasPrTag = version.metadata?.container?.tags?.some(tag => tag.startsWith(prTag));
 
                   if (hasPrTag) {
-                    await github.rest.packages.deletePackageVersionForOrg({
+                    await github.rest.packages.deletePackageVersionForUser({
                       package_type: 'container',
                       package_name: packageName,
-                      org: context.repo.owner,
+                      username: context.repo.owner,
                       package_version_id: version.id
                     });
                     console.log(`✅ Deleted image version: ${packageName} with tags: ${version.metadata.container.tags.join(', ')}`);

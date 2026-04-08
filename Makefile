@@ -3,6 +3,9 @@
 # Version detection
 VERSION ?= $(shell git describe --tags --dirty 2>/dev/null || echo "dev")
 
+# Local container builds use nerdctl in the k8s.io namespace so kubelet can see them
+NERDCTL := nerdctl --namespace k8s.io
+
 .PHONY: help
 help: ## Show this help message
 	@echo "Available targets:"
@@ -21,50 +24,45 @@ test: ## Run tests with coverage
 .PHONY: build
 build: ## Build plugin and sidecar binaries
 	@echo "Building binaries with version: $(VERSION)"
-	@CGO_ENABLED=0 go build -ldflags "-X github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o /bin/cnpg-i-scale-to-zero-plugin cmd/plugin/plugin.go
-	@CGO_ENABLED=0 go build -ldflags "-X github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o /bin/cnpg-scale-to-zero-sidecar cmd/sidecar/sidecar.go
+	@CGO_ENABLED=0 go build -ldflags "-X github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o bin/cnpg-i-scale-to-zero-plugin cmd/plugin/plugin.go
+	@CGO_ENABLED=0 go build -ldflags "-X github.com/melderan/cnpg-i-scale-to-zero/pkg/metadata.Version=$(VERSION)" -o bin/cnpg-scale-to-zero-sidecar cmd/sidecar/sidecar.go
 
-.PHONY: docker-build-plugin-dev
-docker-build-plugin-dev: ## Build Docker image for the plugin
-	@echo "Building plugin Docker image with version: $(VERSION)"
-	@docker build -f Dockerfile.plugin --build-arg VERSION=$(VERSION) -t cnpg-i-scale-to-zero-plugin:dev .
+.PHONY: build-plugin-dev
+build-plugin-dev: ## Build container image for the plugin (nerdctl, k8s.io namespace)
+	@echo "Building plugin image with version: $(VERSION)"
+	@$(NERDCTL) build -f Dockerfile.plugin --build-arg VERSION=$(VERSION) -t cnpg-i-scale-to-zero-plugin:dev .
 
-.PHONY: docker-build-sidecar-dev
-docker-build-sidecar-dev: ## Build Docker image for the sidecar
-	@echo "Building sidecar Docker image with version: $(VERSION)"
-	@docker build -f Dockerfile.sidecar --build-arg VERSION=$(VERSION) -t cnpg-scale-to-zero-sidecar:dev .
+.PHONY: build-sidecar-dev
+build-sidecar-dev: ## Build container image for the sidecar (nerdctl, k8s.io namespace)
+	@echo "Building sidecar image with version: $(VERSION)"
+	@$(NERDCTL) build -f Dockerfile.sidecar --build-arg VERSION=$(VERSION) -t cnpg-scale-to-zero-sidecar:dev .
 
-.PHONY: docker-build-dev
-docker-build-dev: docker-build-plugin-dev docker-build-sidecar-dev ## Build both Docker development images
+.PHONY: build-images-dev
+build-images-dev: build-plugin-dev build-sidecar-dev ## Build both container images for local dev
 
 .PHONY: manifest
-manifest: ## Generate Kubernetes manifest
+manifest: ## Generate production Kubernetes manifest
 	@echo "Generating Kubernetes manifest..."
-	@if command -v kustomize >/dev/null 2>&1; then \
-		cd kubernetes && kustomize build . > ../manifest.yaml; \
-		echo "Manifest generated at manifest.yaml using kustomize"; \
-	else \
-		echo "kustomize not found, using pre-generated manifest.yaml"; \
-		echo "To regenerate, install kustomize and run 'make manifest' again"; \
-	fi
+	@kubectl kustomize kubernetes/ > manifest.yaml
+	@echo "Manifest generated at manifest.yaml"
 
 .PHONY: manifest-dev
-manifest-dev: manifest ## Generate development Kubernetes manifest with local images
-	@echo "Generating development Kubernetes manifest with local images..."
-	@cp manifest.yaml manifest-dev.yaml
-	@sed -i.tmp 's|image: ghcr.io/melderan/cnpg-i-scale-to-zero:main|image: cnpg-i-scale-to-zero-plugin:dev|g' manifest-dev.yaml
-	@sed -i.tmp 's|Z2hjci5pby94YXRhaW8vY25wZy1pLXNjYWxlLXRvLXplcm8tc2lkZWNhcjptYWlu|Y25wZy1zY2FsZS10by16ZXJvLXNpZGVjYXI6ZGV2|g' manifest-dev.yaml
-	@sed -i.tmp 's|value: info|value: debug|g' manifest-dev.yaml
-	@rm -f manifest-dev.yaml.tmp
-	@echo "Development manifest generated at manifest-dev.yaml with local images:"
-	@echo "  - Plugin image: cnpg-i-scale-to-zero-plugin:dev"
-	@echo "  - Sidecar image: cnpg-scale-to-zero-sidecar:dev"
-	@echo "  - Log level: debug"
+manifest-dev: ## Generate development Kubernetes manifest with local images
+	@echo "Generating development Kubernetes manifest..."
+	@kubectl kustomize kubernetes/overlays/dev/ > manifest-dev.yaml
+	@echo "Development manifest generated at manifest-dev.yaml"
 
 .PHONY: deploy
-deploy: manifest ## Deploy the manifest to the current Kubernetes cluster
+deploy: manifest ## Deploy production manifest to the current cluster
 	@echo "Deploying manifest to Kubernetes..."
 	@kubectl apply -f manifest.yaml
+	@echo "Waiting for deployment to be ready..."
+	@kubectl wait --for=condition=available --timeout=300s deployment/scale-to-zero -n cnpg-system
+
+.PHONY: deploy-dev
+deploy-dev: build-images-dev manifest-dev ## Build images and deploy dev manifest to the current cluster
+	@echo "Deploying development manifest to Kubernetes..."
+	@kubectl apply -f manifest-dev.yaml
 	@echo "Waiting for deployment to be ready..."
 	@kubectl wait --for=condition=available --timeout=300s deployment/scale-to-zero -n cnpg-system
 
@@ -72,13 +70,6 @@ deploy: manifest ## Deploy the manifest to the current Kubernetes cluster
 undeploy: ## Remove the plugin from the current Kubernetes cluster
 	@echo "Removing scale-to-zero plugin from Kubernetes..."
 	@kubectl delete -f manifest.yaml --ignore-not-found=true
-
-.PHONY: deploy-dev
-deploy-dev: manifest-dev ## Deploy the development manifest to the current Kubernetes cluster
-	@echo "Deploying development manifest to Kubernetes..."
-	@kubectl apply -f manifest-dev.yaml
-	@echo "Waiting for deployment to be ready..."
-	@kubectl wait --for=condition=available --timeout=300s deployment/scale-to-zero -n cnpg-system
 
 .PHONY: undeploy-dev
 undeploy-dev: ## Remove the development plugin from the current Kubernetes cluster
@@ -88,32 +79,9 @@ undeploy-dev: ## Remove the development plugin from the current Kubernetes clust
 .PHONY: clean
 clean: ## Clean build artifacts
 	@echo "Cleaning build artifacts..."
-	@rm -f /bin/cnpg-i-scale-to-zero-plugin
-	@rm -f /bin/cnpg-scale-to-zero-sidecar
-	@rm -f coverage
-
-.PHONY: kind-load-sidecar
-kind-load-sidecar: docker-build-sidecar-dev ## Build and load Docker sidecar images into kind cluster
-	@echo "Loading sidecar image into kind cluster..."
-	@kind load docker-image cnpg-scale-to-zero-sidecar:dev || echo "Failed to load sidecar image (kind cluster may not exist)"
-
-.PHONY: kind-load-plugin
-kind-load-plugin: docker-build-plugin-dev ## Build and load Docker plugin images into kind cluster
-	@echo "Loading plugin image into kind cluster..."
-	@kind load docker-image cnpg-i-scale-to-zero-plugin:dev || echo "Failed to load plugin image (kind cluster may not exist)"
-
-.PHONY: kind-load
-kind-load: docker-build-dev ## Build and load Docker images into kind cluster
-	@echo "Loading images into kind cluster..."
-	@kind load docker-image cnpg-i-scale-to-zero-plugin:dev || echo "Failed to load plugin image (kind cluster may not exist)"
-	@kind load docker-image cnpg-scale-to-zero-sidecar:dev || echo "Failed to load sidecar image (kind cluster may not exist)"
-
-.PHONY: kind-deploy-dev
-kind-deploy-dev: kind-load manifest-dev ## Build, load images to kind, and deploy development manifest
-	@echo "Deploying development manifest to Kubernetes..."
-	@kubectl apply -f manifest-dev.yaml
-	@echo "Waiting for deployment to be ready..."
-	@kubectl wait --for=condition=available --timeout=300s deployment/scale-to-zero -n cnpg-system
+	@rm -f bin/cnpg-i-scale-to-zero-plugin
+	@rm -f bin/cnpg-scale-to-zero-sidecar
+	@rm -f manifest-dev.yaml
 
 .PHONY: all
-all: lint test build docker-build-dev ## Run all quality checks and build everything
+all: lint test build build-images-dev ## Run all quality checks and build everything

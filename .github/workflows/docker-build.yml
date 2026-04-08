@@ -116,21 +116,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - name: Install kustomize
+      - name: Generate manifest with release image tag
         run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-          sudo mv kustomize /usr/local/bin/
-
-      - name: Update kustomization with image tag
-        run: |
-          # Update the plugin image tag in kustomization.yaml
-          sed -i "s/newTag: main/newTag: ${{ inputs.image_tag }}/g" kubernetes/kustomization.yaml
-
-          # Update the secret generator value to use the correct sidecar tag
-          sed -i "s|ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:main|ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:${{ inputs.image_tag }}|g" kubernetes/kustomization.yaml
-
-      - name: Generate manifest
-        run: make manifest
+          cd kubernetes/base
+          kubectl kustomize edit set image "ghcr.io/melderan/cnpg-i-scale-to-zero:${{ inputs.image_tag }}" 2>/dev/null || \
+            sed -i "s/newTag: main/newTag: ${{ inputs.image_tag }}/g" kustomization.yaml
+          sed -i "s|ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:main|ghcr.io/melderan/cnpg-i-scale-to-zero-sidecar:${{ inputs.image_tag }}|g" kustomization.yaml
+          cd ../..
+          kubectl kustomize kubernetes/ > manifest.yaml
 
       - name: Upload manifest artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

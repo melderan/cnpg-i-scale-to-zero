@@ -13,7 +13,7 @@ type Pool struct {
 	*pgxpool.Pool
 }
 
-const maxConns = 50
+const maxConns = 2
 
 func NewConnPool(ctx context.Context, url string) (*Pool, error) {
 	pgCfg, err := pgxpool.ParseConfig(url)

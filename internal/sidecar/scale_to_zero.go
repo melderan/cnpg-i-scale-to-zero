@@ -10,7 +10,6 @@ import (
 
 	cnpgv1 "github.com/cloudnative-pg/cloudnative-pg/api/v1"
 	"github.com/cloudnative-pg/machinery/pkg/log"
-	_ "github.com/lib/pq"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/melderan/cnpg-i-scale-to-zero/internal/postgres"

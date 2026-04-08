@@ -15,15 +15,18 @@ A CNPG-I (CloudNativePG Interoperability) plugin that automatically hibernates i
 make build              # Build plugin and sidecar binaries
 make test               # Run tests: go test -timeout 10m -race -cover -failfast ./...
 make lint               # golangci-lint v2.1.0
-make docker-build-dev   # Build both Docker images
-make kind-deploy-dev    # Build, load to kind, deploy dev manifest
-make manifest           # Generate Kubernetes manifest via kustomize
+make build-images-dev   # Build both container images (nerdctl, k8s.io namespace)
+make deploy-dev         # Build images + deploy dev manifest to current cluster
+make manifest           # Generate production Kubernetes manifest
+make manifest-dev       # Generate dev manifest (local images, debug logging)
 ```
 
 Run a single test:
 ```bash
 go test -timeout 10m -race -cover -failfast ./internal/sidecar -run TestScaleToZero
 ```
+
+Local container builds use `nerdctl --namespace k8s.io` for Rancher Desktop compatibility.
 
 ## Architecture
 
@@ -38,6 +41,9 @@ internal/postgres/             Connection pooling and query utilities (pgx)
 internal/config/               Plugin configuration with resource defaults
 
 pkg/metadata/                  Version info injected via ldflags
+
+kubernetes/base/               Kustomize base (production resources)
+kubernetes/overlays/dev/       Dev overlay (local images, debug log level)
 ```
 
 **Key flow**: CNPG operator creates a Pod -> lifecycle hook fires -> plugin patches the Pod spec to add sidecar container -> sidecar monitors `pg_stat_activity` -> after inactivity threshold, sets `cnpg.io/hibernation` annotation -> CNPG scales cluster to zero.
