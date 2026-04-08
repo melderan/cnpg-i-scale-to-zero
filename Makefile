@@ -83,5 +83,13 @@ clean: ## Clean build artifacts
 	@rm -f bin/cnpg-scale-to-zero-sidecar
 	@rm -f manifest-dev.yaml
 
+.PHONY: test-local
+test-local: ## Build, deploy, and create a test cluster in Rancher Desktop
+	@./hack/test-local.sh
+
+.PHONY: test-local-teardown
+test-local-teardown: ## Remove test cluster and plugin from Rancher Desktop
+	@./hack/test-local.sh teardown
+
 .PHONY: all
 all: lint test build build-images-dev ## Run all quality checks and build everything

@@ -28,6 +28,17 @@ go test -timeout 10m -race -cover -failfast ./internal/sidecar -run TestScaleToZ
 
 Local container builds use `nerdctl --namespace k8s.io` for Rancher Desktop compatibility.
 
+## Local End-to-End Testing
+
+Requires Rancher Desktop with CNPG operator installed.
+
+```bash
+make test-local           # Build images, deploy plugin, create test cluster (2min inactivity)
+make test-local-teardown  # Remove test cluster and plugin
+```
+
+The test script (`hack/test-local.sh`) builds both images, deploys the plugin, creates a single-instance PostgreSQL cluster with scale-to-zero enabled, and verifies the sidecar gets injected. After 2 minutes of inactivity the cluster will hibernate automatically.
+
 ## Architecture
 
 ```
