@@ -1,5 +1,4 @@
 # See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -18,8 +17,21 @@ repos:
         args: ["--timeout=10m", "--config=.golangci.yml"]
   - repo: local
     hooks:
-      - id: generate-manifest
+      - id: go-mod-tidy
+        name: go mod tidy
         language: system
+        entry: sh -c 'go mod tidy && git diff --exit-code go.mod go.sum'
+        pass_filenames: false
+        files: (\.go|go\.mod|go\.sum)$
+      - id: go-test
+        name: go test
+        language: system
+        entry: go test -timeout 10m -race -failfast ./...
+        pass_filenames: false
+        stages: [pre-push]
+      - id: generate-manifest
         name: generate manifest
-        entry: make manifest
+        language: system
+        entry: sh -c 'make manifest && git add manifest.yaml'
+        pass_filenames: false
         files: ^kubernetes/
