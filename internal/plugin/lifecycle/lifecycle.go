@@ -134,7 +134,7 @@ func (impl Implementation) reconcileMetadata(
 		"primary", cluster.Status.CurrentPrimary,
 		"resources", sidecarContainer.Resources)
 
-	err = object.InjectPluginSidecarInitContainer(mutatedPod, sidecarContainer, false)
+	err = object.InjectPluginSidecar(mutatedPod, sidecarContainer, false) //nolint:staticcheck // regular sidecar, not init -- must start alongside postgres, not before it
 	if err != nil {
 		return nil, err
 	}
